@@ -20,25 +20,26 @@ contract FundMe{
     // Allow users to send $
     // Have a minimum $ sent
     // how do we send ETH to this contract?
-    require(msg.value > 5 * 1e18, "Didn't sent enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
+    require(getConversionRate(msg.value) > 5 * 1e18, "Didn't sent enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
     
     // What is reverting?
     // it undoes any actions that have been done ans sends the remaining gas back to the caller 
-
-
-  }
-
-  function getPrice() public view returns (uint80,int256,uint256,uint256,uint80){
-    // address of the contract 0x694AA1769357215DE4FAC081bf1f309aDC325306 chainlink price feed
-    // ABI
-    return priceFeed.latestRoundData();
   }
 
   function getVersion() public view returns (uint256){
     return priceFeed.version();
   }
-  function getConversionRate() public {
 
+  function getPrice() public view returns (uint256){
+    // address of the contract 0x694AA1769357215DE4FAC081bf1f309aDC325306 chainlink price feed
+    // ABI
+    (, int256 price, , , ) = priceFeed.latestRoundData();
+    return uint256(price * 1e10); 
+  }
+
+  function getConversionRate(uint256 ethAmount) public view returns (uint256){
+    uint256 ethPrice = getPrice();
+    return (ethPrice * ethAmount) / 1e18;
   }
 
   function withdraw() public {
