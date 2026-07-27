@@ -19,7 +19,7 @@ contract MockV3Aggregator is AggregatorV3Interface {
         override
         returns (uint80, int256, uint256, uint256, uint80)
     {
-        return (1, 3000e8, block.timestamp, block.timestamp, 1);
+        return (1, 1953e8, block.timestamp, block.timestamp, 1);
     }
 
     function description() external pure override returns (string memory) {
