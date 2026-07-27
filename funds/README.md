@@ -1,0 +1,1 @@
+In this project I'm learning how to get funds from users, also withdraw funds and set a minimun funding value in USD
