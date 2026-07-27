@@ -21,18 +21,12 @@ contract FundMeTest is Test {
     }
 
     function testGetPrice() public {
-      (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) = fundMe.getPrice();
-      assertEq(roundId, 1);
-      assertEq(answer, 3000e8);
-      assertEq(startedAt, block.timestamp);
-      assertEq(updatedAt, block.timestamp);
-      assertEq(answeredInRound, 1);
-
-      // return (1, 3000e8, block.timestamp, block.timestamp, 1);
+      uint256 price = fundMe.getPrice();
+      assertEq(price, 1953e18);
     }
 
-    function testGetPriceJustAnswer() public {
-      (, int256 answer, , , ) = fundMe.getPrice();
-      assertEq(answer, 3000e8);
+    function testFundExpectedRevert() public {
+      vm.expectRevert();
+      fundMe.fund();
     }
 }
