@@ -12,7 +12,7 @@ contract FundMe{
   using PriceConverter for uint256;
   using PriceConverter for AggregatorV3Interface;
 
-  uint256 public MINIMUN_USD = 5e18;
+  uint256 public constant MINIMUN_USD = 5e18;
   AggregatorV3Interface public priceFeed;
   mapping(address => uint256) public addressToAmountFunded;
   address[] public userAddress;
