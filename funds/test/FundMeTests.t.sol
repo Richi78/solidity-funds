@@ -6,7 +6,11 @@ import {Test} from "forge-std/Test.sol";
 import {FundMe} from "src/Funds.sol";
 import {MockV3Aggregator} from "src/mock/mockV3Aggregator.sol";
 
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import {PriceConverter} from "src/PriceConverter.sol";
+
 contract FundMeTest is Test {
+    using PriceConverter for AggregatorV3Interface;
     FundMe fundMe;
     MockV3Aggregator mock;
 
@@ -21,7 +25,7 @@ contract FundMeTest is Test {
     }
 
     function testGetPrice() public {
-      uint256 price = fundMe.getPrice();
+      uint256 price = fundMe.priceFeed().getPrice();
       assertEq(price, 1953e18);
     }
 
