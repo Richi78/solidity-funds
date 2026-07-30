@@ -11,6 +11,8 @@ contract FundMe{
 
   uint256 public minimumUsd = 5;
   AggregatorV3Interface public priceFeed;
+  mapping(address => uint256) public addressToAmountFunded;
+  address[] public userAddress;
 
   constructor(address _priceFeed){
     priceFeed = AggregatorV3Interface(_priceFeed);
@@ -24,6 +26,11 @@ contract FundMe{
     
     // What is reverting?
     // it undoes any actions that have been done ans sends the remaining gas back to the caller 
+
+    if(addressToAmountFunded[msg.sender] == 0){
+      userAddress.push(msg.sender);
+    }
+    addressToAmountFunded[msg.sender] += msg.value;
   }
 
   function getVersion() public view returns (uint256){
