@@ -29,4 +29,13 @@ contract FundMeTest is Test {
       vm.expectRevert();
       fundMe.fund();
     }
+    function testFundSuccess() public {
+      address alice = makeAddr("alice");
+      vm.deal(alice, 2 ether);
+      vm.prank(alice);
+      uint256 current = address(fundMe).balance;
+      fundMe.fund{value: 1 ether}();
+      assertEq(address(fundMe).balance, current + 1 ether);
+      assertEq(alice.balance, 1 ether);
+    }
 }
