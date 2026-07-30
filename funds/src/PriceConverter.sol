@@ -9,7 +9,7 @@ library PriceConverter{
     // address of the contract 0x694AA1769357215DE4FAC081bf1f309aDC325306 chainlink price feed
     // ABI
     (, int256 price, , , ) = _priceFeed.latestRoundData();
-    return uint256(price * 1e0); 
+    return uint256(price * 1e10); 
   }
 
   function getConversionRate(uint256 ethAmount, AggregatorV3Interface _priceFeed) public view returns (uint256){
