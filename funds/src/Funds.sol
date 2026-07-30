@@ -3,15 +3,16 @@
 pragma solidity ^0.8.18;
 
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
-import {PriceConverter} from "./PriceConverter.sol";
+import {PriceConverter} from "src/PriceConverter.sol";
 
 contract FundMe{
   // Get funds from users
   // Withdraw funds
   // Set a minimum funding value in USD
   using PriceConverter for uint256;
+  using PriceConverter for AggregatorV3Interface;
 
-  uint256 public minimumUsd = 5;
+  uint256 public MINIMUN_USD = 5e18;
   AggregatorV3Interface public priceFeed;
   mapping(address => uint256) public addressToAmountFunded;
   address[] public userAddress;
@@ -24,7 +25,7 @@ contract FundMe{
     // Allow users to send $
     // Have a minimum $ sent
     // how do we send ETH to this contract?
-    require(msg.value.getConversionRate(priceFeed) > 5 * 1e18, "Didn't sent enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
+    require(msg.value.getConversionRate(priceFeed) > MINIMUN_USD, "Didn't send enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
     
     // What is reverting?
     // it undoes any actions that have been done ans sends the remaining gas back to the caller 
