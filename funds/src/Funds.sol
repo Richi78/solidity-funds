@@ -12,38 +12,41 @@ contract FundMe{
   using PriceConverter for uint256;
   using PriceConverter for AggregatorV3Interface;
 
+  // variables
+
   uint256 public constant MINIMUN_USD = 5e18;
   AggregatorV3Interface public priceFeed;
   mapping(address => uint256) public addressToAmountFunded;
   address[] public userAddress;
-  address owner;
+  address immutable i_owner;
 
   constructor(address _priceFeed){
     priceFeed = AggregatorV3Interface(_priceFeed);
-    owner = msg.sender;
+    i_owner = msg.sender;
   }
 
+  // events
+
+  // errors 
+  error NotOwner();
+
+  // modifiers
+
   modifier onlyOwner(){
-    require(owner == msg.sender, "Your are not the owner");
+    // require(i_owner == msg.sender, "Must be owner");
+    if(msg.sender != i_owner){ revert NotOwner(); }
     _;
   }
 
+  // functions
+
   function fund() public payable{
-    // Allow users to send $
-    // Have a minimum $ sent
-    // how do we send ETH to this contract?
     require(msg.value.getConversionRate(priceFeed) > MINIMUN_USD, "Didn't send enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
     
-    // What is reverting?
-    // it undoes any actions that have been done ans sends the remaining gas back to the caller 
     if(addressToAmountFunded[msg.sender] == 0){
       userAddress.push(msg.sender);
     }
     addressToAmountFunded[msg.sender] += msg.value;
-  }
-
-  function getVersion() public view returns (uint256){
-    return priceFeed.version();
   }
 
   function refundAll() public onlyOwner {
@@ -55,9 +58,17 @@ contract FundMe{
       require(success, "Call failed");
     }
     userAddress = new address[](0);
-    // there are different ways to pass eth to other acc
-    // .transfer -> limited gas if failed throws error and reversed authomatically
-    // .send -> limited gas, returns a bool so we need to reverse manually
-    // .call -> unlimited gas, returns a tupple (bool, bytes mem data), also reverse manually
+  }
+
+  function getFundersLength() public view returns (uint256){
+    return userAddress.length;
+  }
+
+  receive() external payable {
+    fund();
+  }
+
+  fallback() external payable {
+    fund();
   }
 }
