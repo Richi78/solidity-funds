@@ -16,9 +16,16 @@ contract FundMe{
   AggregatorV3Interface public priceFeed;
   mapping(address => uint256) public addressToAmountFunded;
   address[] public userAddress;
+  address owner;
 
   constructor(address _priceFeed){
     priceFeed = AggregatorV3Interface(_priceFeed);
+    owner = msg.sender;
+  }
+
+  modifier onlyOwner(){
+    require(owner == msg.sender, "Your are not the owner");
+    _;
   }
 
   function fund() public payable{
@@ -39,7 +46,18 @@ contract FundMe{
     return priceFeed.version();
   }
 
-  function withdraw() public {
-
+  function refundAll() public onlyOwner {
+    for(uint256 i=0 ; i<userAddress.length ; i++){
+      address funder = userAddress[i];
+      uint256 amount = addressToAmountFunded[funder];
+      addressToAmountFunded[funder]=0;
+      (bool success, ) = payable(funder).call{value: amount}("");
+      require(success, "Call failed");
+    }
+    userAddress = new address[](0);
+    // there are different ways to pass eth to other acc
+    // .transfer -> limited gas if failed throws error and reversed authomatically
+    // .send -> limited gas, returns a bool so we need to reverse manually
+    // .call -> unlimited gas, returns a tupple (bool, bytes mem data), also reverse manually
   }
 }
