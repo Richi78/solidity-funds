@@ -7,14 +7,18 @@ import "src/Funds.sol";
 import "src/mock/mockV3Aggregator.sol";
 
 contract DeployFunds is Script{
+
+  function deploy() public returns(FundMe) {
+    MockV3Aggregator mockV3Aggregator = new MockV3Aggregator();
+    FundMe fundMe = new FundMe(address(mockV3Aggregator));
+    return fundMe;
+  }
+
   function run() external {
     uint256 privateKey = vm.envUint("PRIVATE_KEY");
-    vm.startBroadcast(privateKey);
-
-    MockV3Aggregator mockV3Aggregator = new MockV3Aggregator();
-    
-    FundMe fundMe = new FundMe(address(mockV3Aggregator));
-
+    vm.startBroadcast();
+    deploy();
     vm.stopBroadcast();
+
   }
 }
