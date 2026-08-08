@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 
 import {Test} from "forge-std/Test.sol";
 import {FundMe} from "src/Funds.sol";
-import {MockV3Aggregator} from "src/mock/mockV3Aggregator.sol";
+import {HelperConfig} from "script/Helperconfig.s.sol";
 
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "src/PriceConverter.sol";
@@ -12,17 +12,13 @@ import {PriceConverter} from "src/PriceConverter.sol";
 contract FundMeTest is Test {
     using PriceConverter for AggregatorV3Interface;
     address owner = makeAddr("owner");
-    address user = makeAddr("user");
     FundMe fundMe;
-    MockV3Aggregator mock;
 
     function setUp() public {
-      mock = new MockV3Aggregator();
-
+      (address priceFeed) = (new HelperConfig()).activeNetworkConfig();
       vm.startPrank(owner);
-      fundMe = new FundMe(address(mock));
+      fundMe = new FundMe(priceFeed);
       vm.stopPrank();
-
     }
 
     function testGetVersion() public {
@@ -59,6 +55,7 @@ contract FundMeTest is Test {
 
     function testRefundAllNotOwner() public {
       vm.expectRevert(FundMe.NotOwner.selector);
+      address user = makeAddr("user");
       vm.prank(user);
       fundMe.refundAll();
     }
