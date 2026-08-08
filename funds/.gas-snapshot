@@ -1,0 +1,8 @@
+FundMeTest:testFallbackCallsFund() (gas: 101499)
+FundMeTest:testFundExpectedRevert() (gas: 20255)
+FundMeTest:testFundSuccess() (gas: 97900)
+FundMeTest:testGetPrice() (gas: 17215)
+FundMeTest:testGetVersion() (gas: 15685)
+FundMeTest:testReceiveCallsFund() (gas: 101096)
+FundMeTest:testRefundAllNotOwner() (gas: 11374)
+FundMeTest:testRefundAllOwner() (gas: 14777)
