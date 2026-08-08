@@ -22,12 +22,12 @@ contract FundMeTest is Test {
     }
 
     function testGetVersion() public {
-      uint version = fundMe.priceFeed().getVersion();
+      uint version = fundMe.getPriceFeed().getVersion();
       assertEq(version, 4);
     }
 
     function testGetPrice() public {
-      uint256 price = fundMe.priceFeed().getPrice();
+      uint256 price = fundMe.getPriceFeed().getPrice();
       assertEq(price, 1953e18);
     }
 
@@ -66,8 +66,8 @@ contract FundMeTest is Test {
       vm.prank(alice);
       (bool success, ) = address(fundMe).call{value: 0.1 ether}("");
       assertTrue(success);
-      assertEq(fundMe.addressToAmountFunded(alice), 0.1 ether);
-      assertEq(fundMe.userAddress(0), alice);
+      assertEq(fundMe.getAddressToAmountFunded(alice), 0.1 ether);
+      assertEq(fundMe.getUserAddress(0), alice);
       assertEq(address(fundMe).balance, 0.1 ether);
     }
 
@@ -77,8 +77,8 @@ contract FundMeTest is Test {
       vm.prank(alice);
       (bool success, ) = address(fundMe).call{value: 0.1 ether}(abi.encodeWithSignature("functionDoesNotExist()"));
       assertTrue(success);
-      assertEq(fundMe.addressToAmountFunded(alice), 0.1 ether);
-      assertEq(fundMe.userAddress(0), alice);
+      assertEq(fundMe.getAddressToAmountFunded(alice), 0.1 ether);
+      assertEq(fundMe.getUserAddress(0), alice);
       assertEq(address(fundMe).balance, 0.1 ether);
     }
 }
