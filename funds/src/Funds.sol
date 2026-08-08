@@ -15,9 +15,9 @@ contract FundMe{
   // variables
 
   uint256 public constant MINIMUN_USD = 5e18;
-  AggregatorV3Interface public priceFeed;
-  mapping(address => uint256) public addressToAmountFunded;
-  address[] public userAddress;
+  AggregatorV3Interface private priceFeed;
+  mapping(address => uint256) private s_addressToAmountFunded;
+  address[] private s_userAddress;
   address immutable i_owner;
 
   constructor(address _priceFeed){
@@ -43,25 +43,25 @@ contract FundMe{
   function fund() public payable{
     require(msg.value.getConversionRate(priceFeed) > MINIMUN_USD, "Didn't send enought ETH"); // 1e18 = 1ETH = 1000000000000000000 wei 
     
-    if(addressToAmountFunded[msg.sender] == 0){
-      userAddress.push(msg.sender);
+    if(s_addressToAmountFunded[msg.sender] == 0){
+      s_userAddress.push(msg.sender);
     }
-    addressToAmountFunded[msg.sender] += msg.value;
+    s_addressToAmountFunded[msg.sender] += msg.value;
   }
 
   function refundAll() public onlyOwner {
-    for(uint256 i=0 ; i<userAddress.length ; i++){
-      address funder = userAddress[i];
-      uint256 amount = addressToAmountFunded[funder];
-      addressToAmountFunded[funder]=0;
+    for(uint256 i=0 ; i<s_userAddress.length ; i++){
+      address funder = s_userAddress[i];
+      uint256 amount = s_addressToAmountFunded[funder];
+      s_addressToAmountFunded[funder]=0;
       (bool success, ) = payable(funder).call{value: amount}("");
       require(success, "Call failed");
     }
-    userAddress = new address[](0);
+    s_userAddress = new address[](0);
   }
 
   function getFundersLength() public view returns (uint256){
-    return userAddress.length;
+    return s_userAddress.length;
   }
 
   receive() external payable {
@@ -70,5 +70,21 @@ contract FundMe{
 
   fallback() external payable {
     fund();
+  }
+
+  /**
+   * View / Pure functions (Getters)
+   */
+
+  function getAddressToAmountFunded(address fundingAddress) external view returns (uint256){
+    return s_addressToAmountFunded[fundingAddress];
+  }
+
+  function getUserAddress(uint256 index) external view returns (address){
+    return s_userAddress[index];
+  }
+
+  function getPriceFeed() external view returns (AggregatorV3Interface){
+    return priceFeed;
   }
 }
